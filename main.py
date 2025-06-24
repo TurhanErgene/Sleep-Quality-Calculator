@@ -3,14 +3,14 @@ from machine import ADC, Pin
 import time
 
 
-tempSensor = dht.DHT11(machine.Pin(15))     # DHT11 Constructor 
+tempSensor = dht.DHT11(machine.Pin(15))  # DHT11 Constructor
 ldr = ADC(Pin(26))
 led = Pin("LED", Pin.OUT)
 
 # ADC for LM35 temperature sensor
 adc = machine.ADC(27)
-sf = 4095/65535 # Scale factor
-volt_per_adc = (3.3 / 4095)
+sf = 4095 / 65535  # Scale factor
+volt_per_adc = 3.3 / 4095
 
 # Define the GPIO pins for the LEDs
 yellowLED = Pin(17, Pin.OUT)
@@ -31,16 +31,18 @@ def getTemperature():
     dy = abs(0 - 0.5)
     shift = volt - 0.5
     temp = shift / (dy / dx)
-    
+
     return temp
+
 
 # gets the light value from the LDR sensor
 # returns the darkness value in percentage
 def getLightValue():
     light = ldr.read_u16()
     darkness = round(light / 65535 * 100, 2)
-    
+
     return darkness
+
 
 # gets the humidity value from the DHT11 sensor
 def getHumidity():
@@ -49,46 +51,77 @@ def getHumidity():
         humidity = tempSensor.humidity()
         return humidity
     except Exception as error:
-       print("Exception occurred", error)
+        print("Exception occurred", error)
     time.sleep(2)
-    
 
-# calculates the sleep quality based on the temperature, light, and humidity values
-# turns on the red LED if the sleep quality is poor, yellow LED if average, and green LED if good
-def calculateSleepQuality():
-    # temperature = tempSensor.temperature() # Uncomment if using DHT11 for temperature
 
-    temperature = getTemperature()
-    light = getLightValue() 
-    humidity = getHumidity()
-    print("Temperature: {}°C, Light: {}%, Humidity: {}%".format(temperature, light, humidity))
+def assessSleepQuality(temperature, light, humidity):
+    """
+    TEMPORARY: Relaxed thresholds for experimental/demo purposes.
 
-    if temperature < 18 or temperature > 24 or light > 50 or humidity < 30 or humidity > 70:
-        redLED.on()
-        yellowLED.off()
-        greenLED.off()
-        print("Sleep quality is poor")
-    elif (18 <= temperature <= 24) and (light <= 50) and (30 <= humidity <= 70):
-        yellowLED.on()
-        redLED.off()
-        greenLED.off()
-        print("Sleep quality is average")
+    Explanation:
+    - The ranges here are intentionally broader to simulate different sleep quality outcomes.
+    - In production, these should be tightened based on real user data or scientific standards.
+
+    Recommended Production Ranges:
+    - Temperature: 18–24°C
+    - Light (darkness %): 90–100% (darker = better)
+    - Humidity: 40–60% (somewhat flexible)
+
+    """
+
+    # Fragile mode: easier to get "good" or "average"
+    if temperature < 16 or temperature > 28:
+        return "poor"
+    elif light < 50:  # Higher means darker, so <50 is bright = poor
+        return "poor"
+    elif humidity < 25 or humidity > 75:
+        return "poor"
+    elif (18 <= temperature <= 25) and (light >= 70) and (45 <= humidity <= 55):
+        return "good"
     else:
+        return "average"
+
+
+def setLEDs(quality):
+    redLED.off()
+    yellowLED.off()
+    greenLED.off()
+
+    if quality == "poor":
+        redLED.on()
+    elif quality == "average":
+        yellowLED.on()
+    elif quality == "good":
         greenLED.on()
-        redLED.off()
-        yellowLED.off()
-        print("Sleep quality is good")
-    
+
+
+def calculateSleepQuality():
+    temperature = getTemperature()
+    light = getLightValue()
+    humidity = getHumidity()
+
+    print(
+        f"Temperature: {temperature:.2f}°C, Light: {light:.2f}%, Humidity: {humidity}%"
+    )
+
+    quality = assessSleepQuality(temperature, light, humidity)
+    setLEDs(quality)
+
+    print(f"Sleep quality is {quality}")
+
+
 
 def main():
     while True:
         calculateSleepQuality()
         time.sleep(5)
 
+
 # Run the main function
 if __name__ == "__main__":
     led.on()  # Turn on the onboard LED to indicate the program is running
-    print("Starting sleep quality monitoring...")  
+    print("Starting sleep quality monitoring...")
     try:
         main()
     except KeyboardInterrupt:
