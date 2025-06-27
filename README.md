@@ -25,15 +25,15 @@ I chose to build this project because sleep is essential —especially for those
 
 ## 🔧 Materials
 
-| Component                 | Purpose                         | Source         |
-|--------------------------|----------------------------------|----------------|
-| Raspberry Pi Pico WH     | Microcontroller with Wi-Fi       | Electrokit.se  |
-| DHT11                    | Humidity and temperature sensor  | Electrokit.se  |
-| LM35                     | Analog temperature sensor        | Electrokit.se  |
-| CdS Photoresistor (LDR)  | Ambient light detection          | Electrokit.se  |
-| LEDs (Green, Yellow, Red)| Indicate sleep quality           | Included       |
-| Resistors (330Ω, 10kΩ)   | Voltage drop for LEDs/LDR        | Included       |
-| Breadboard               | Prototyping and wiring           | Included       |
+| Component                 | Purpose                         | Source         | Cost (est.) |
+|--------------------------|----------------------------------|----------------|-------------|
+| Raspberry Pi Pico WH     | Microcontroller with Wi-Fi       | Electrokit.se  | 129 SEK     |
+| DHT11                    | Humidity and temperature sensor  | Electrokit.se  | 39 SEK      |
+| LM35                     | Analog temperature sensor        | Electrokit.se  | 19 SEK      |
+| CdS Photoresistor (LDR)  | Ambient light detection          | Electrokit.se  | 10 SEK      |
+| LEDs (Green, Yellow, Red)| Indicate sleep quality           | Included       | -           |
+| Resistors (330Ω, 10kΩ)   | Voltage drop for LEDs/LDR        | Included       | -           |
+| Breadboard + Jumpers     | Prototyping and wiring           | Included       | -           |
 
 🖼️ *See `SleepQualityMeter.jpg` for reference image of wiring setup.*
 
