@@ -84,7 +84,7 @@ The project currently runs locally on the Raspberry Pi Pico WH and sends the dat
 ---
 
 ## Transmitting the Data / Connectivity
-- Sensor data is transmitted to Adafruit IO every **10 seconds** to comply with the platform’s API rate limits and ensure stable data flow without interruptions.
+- Sensor data is transmitted to Adafruit IO every few seconds to comply with the platform’s API rate limits and ensure stable data flow without interruptions.
 - Communication uses the **MQTT protocol over TLS**, leveraging key values stored securely in a separate `keys.py` file to authenticate with Adafruit IO.
 - The device connects to the network via **Wi-Fi**, utilizing the Raspberry Pi Pico WH’s built-in wireless module for convenient and reliable indoor connectivity.
 - Data transmission occurs securely through **MQTT with TLS encryption**, ensuring confidentiality and integrity of the data in transit.
