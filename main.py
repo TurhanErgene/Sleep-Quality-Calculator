@@ -1,6 +1,9 @@
+import time                   # Allows use of time.sleep() for delays
+from mqtt import MQTTClient   # For use of MQTT protocol to talk to Adafruit IO
+import keys                   # Contain all keys used here
+import wifiConnection         # Contains functions to connect/disconnect from WiFi 
 import dht
 from machine import ADC, Pin
-import time
 
 
 tempSensor = dht.DHT11(machine.Pin(15))  # DHT11 Constructor
@@ -102,13 +105,26 @@ def calculateSleepQuality():
     humidity = getHumidity()
 
     print(
-        f"Temperature: {temperature:.2f}°C, Light: {light:.2f}%, Humidity: {humidity}%"
+        f"Temperature: {temperature:.2f}°C, Darkness: {light:.2f}%, Humidity: {humidity}%"
     )
 
     quality = assessSleepQuality(temperature, light, humidity)
     setLEDs(quality)
 
     print(f"Sleep quality is {quality}")
+    
+    # Publish to Adafruit IO
+    try:
+        client.publish(keys.AIO_TEMPERATURE_FEED, str(round(temperature, 2)))
+        time.sleep(2)
+        client.publish(keys.AIO_HUMIDITY_FEED, str(humidity))
+        time.sleep(2)
+        client.publish(keys.AIO_LIGHT_FEED, str(round(light, 2)))
+        time.sleep(2)
+        client.publish(keys.AIO_SLEEP_QUALITY_FEED, quality)
+        print("Published data to Adafruit IO")
+    except Exception as e:
+        print("Failed to publish:", e)
 
 
 
@@ -116,6 +132,25 @@ def main():
     while True:
         calculateSleepQuality()
         time.sleep(5)
+
+# WiFi Connection
+try:
+    ip = wifiConnection.connect()
+except KeyboardInterrupt:
+    print("WiFi connection interrupted")
+
+# MQTT Setup
+client = MQTTClient(
+    keys.AIO_CLIENT_ID,
+    keys.AIO_SERVER,
+    keys.AIO_PORT,
+    keys.AIO_USER,
+    keys.AIO_KEY
+)
+
+client.connect()
+print("Connected to Adafruit IO")
+
 
 
 # Run the main function
@@ -128,4 +163,8 @@ if __name__ == "__main__":
         print("Program stopped by user.")
     finally:
         led.off()  # Turn off the onboard LED when exiting
-    main()
+        client.disconnect()
+        wifiConnection.disconnect()
+        print("Disconnected from Adafruit IO.")
+
+

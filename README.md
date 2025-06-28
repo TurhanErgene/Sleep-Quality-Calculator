@@ -64,6 +64,11 @@ I chose to build this project because sleep is essential —especially for those
 - **LEDs** connected to GPIO 16 (Green), 17 (Yellow), and 18 (Red).
 - **Resistors:** 330Ω for LEDs, 4.7 kΩ for LDR voltage divider.
 
+### Electrical Considerations
+- Voltage levels kept at 3.3V to avoid damaging the Pico WH pins.
+- 330Ω resistor on LEDs ensures current does not exceed safe limits (~10 mA).
+- Voltage divider for LDR protects ADC pin and translates resistance changes to voltage variations.
+
 
 📌 *Use caution with voltage levels.*
 
@@ -77,6 +82,22 @@ The project currently runs locally on the Raspberry Pi Pico WH and sends the dat
 - **Visualization:** Line graphs for sensor values + colored indicator for sleep score.
 - **Frequency:** Data is sent every few seconds for live monitoring. Beware that it's not every second due to rate limit of Adafruit.
 ---
+
+## Transmitting the Data / Connectivity
+- Sensor data is transmitted to Adafruit IO every **10 seconds** to comply with the platform’s API rate limits and ensure stable data flow without interruptions.
+- Communication uses the **MQTT protocol over TLS**, leveraging key values stored securely in a separate `keys.py` file to authenticate with Adafruit IO.
+- The device connects to the network via **Wi-Fi**, utilizing the Raspberry Pi Pico WH’s built-in wireless module for convenient and reliable indoor connectivity.
+- Data transmission occurs securely through **MQTT with TLS encryption**, ensuring confidentiality and integrity of the data in transit.
+- **Design rationale:** Wi-Fi was selected for its widespread availability in typical home environments and sufficient range to cover a bedroom. The security benefits of MQTT over TLS protect the data.
+- **Trade-offs considered:** While Wi-Fi offers reliable and high-bandwidth communication, it consumes more power compared to low-energy alternatives such as LoRa or Zigbee. However, given the project’s focus on a stationary, mains-powered device within a home setting, the convenience and simplicity of Wi-Fi integration outweighed the increased power consumption.
+- **Security measures:** API keys are stored locally on the device in a protected configuration file. No sensitive personal or user-identifiable information is transmitted, minimizing privacy risks.
+
+## Reflections and Future Improvements
+- Adding motion or sound sensors could enhance sleep quality insights.
+- More advanced sensor calibration (DHT22 instead of DHT11) for higher accuracy.
+- Packaging the device into a small enclosure for bedroom use.
+- Exploring low-power communication options for battery operation could be fun to implement too. Which would require better understanding of LoRaWAN protocol that includes Class A, B and C.  
+
 
 ## 🧠 Core Code Functions
 
