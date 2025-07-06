@@ -92,6 +92,9 @@ The project currently runs locally on the Raspberry Pi Pico WH and sends the dat
 - **Trade-offs considered:** While Wi-Fi offers reliable and high-bandwidth communication, it consumes more power compared to low-energy alternatives such as LoRa or Zigbee. However, given the project’s focus on a stationary, mains-powered device within a home setting, the convenience and simplicity of Wi-Fi integration outweighed the increased power consumption.
 - **Security measures:** API keys are stored locally on the device in a protected configuration file. No sensitive personal or user-identifiable information is transmitted, minimizing privacy risks.
 
+![Circuit Diagram](./dashboard.png)
+Overview of the dashboard
+
 ## Reflections and Future Improvements
 - Adding motion or sound sensors could enhance sleep quality insights.
 - More advanced sensor calibration (DHT22 instead of DHT11) for higher accuracy.
